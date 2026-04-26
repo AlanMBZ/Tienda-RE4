@@ -1,15 +1,32 @@
+import { useEffect, useState } from "react";
 import WeaponList from "./components/WeaponList";
 import WeaponForm from "./components/WeaponForm";
-import { useRef } from "react";
+import { getWeapons } from "./api/weaponApi";
+import type { Weapon } from "./types/Weapon";
 
 function App() {
-  const ref = useRef<any>();
+  const [weapons, setWeapons] = useState<Weapon[]>([]);
+
+  const loadWeapons = async () => {
+    const res = await getWeapons();
+    setWeapons(res.data);
+  };
+
+  useEffect(() => {
+    const fetchWeapons = async () => {
+      const res = await getWeapons();
+      setWeapons(res.data);
+    };
+
+    fetchWeapons();
+  }, []);
 
   return (
     <div>
       <h1>Tienda RE4</h1>
-      <WeaponForm reload={() => ref.current()} />
-      <WeaponList ref={ref} />
+
+      <WeaponForm reload={loadWeapons} />
+      <WeaponList weapons={weapons} reload={loadWeapons} />
     </div>
   );
 }

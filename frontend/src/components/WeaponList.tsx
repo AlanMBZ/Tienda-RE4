@@ -1,28 +1,23 @@
 // src/components/WeaponList.tsx
-import { useEffect, useState } from "react";
-import { getWeapons, deleteWeapon } from "../api/weaponApi";
+import { deleteWeapon } from "../api/weaponApi";
 import type { Weapon } from "../types/Weapon";
 
-export default function WeaponList() {
-  const [weapons, setWeapons] = useState<Weapon[]>([]);
+type Props = {
+  weapons: Weapon[];
+  reload: () => void;
+};
 
-  const loadWeapons = async () => {
-    const res = await getWeapons();
-    setWeapons(res.data);
+export default function WeaponList({ weapons, reload }: Props) {
+
+  const handleDelete = async (id: string) => {
+    await deleteWeapon(id);
+    reload(); // recarga desde App
   };
-
-  useEffect(() => {
-    const fetchWeapons = async () => {
-      const res = await getWeapons();
-      setWeapons(res.data);
-    };
-
-    fetchWeapons();
-  }, []);
 
   return (
     <div>
       <h2>Armas</h2>
+
       {weapons.map((w) => (
         <div key={w._id}>
           <h3>{w.nombre}</h3>
@@ -31,11 +26,11 @@ export default function WeaponList() {
           <p>TIPO: {w.tipo}</p>
           <p>MUNICION: {w.municion}</p>
           <p>DISPONIBLE: {w.stock}</p>
-          
 
           <img src={w.imagen} alt={w.nombre} width="150" />
           <br />
-          <button onClick={() => deleteWeapon(w._id!).then(loadWeapons)}>
+
+          <button onClick={() => handleDelete(w._id!)}>
             Eliminar
           </button>
         </div>
